@@ -1,0 +1,8 @@
+Flask
+py-cpuinfo
+psutil
+gunicorn
+black
+flake8
+pytest
+werkzeug

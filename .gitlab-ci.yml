@@ -1,0 +1,50 @@
+#This workflow block specifies that the pipeline should run only when there's a push to the main branch
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: never
+    - when: always
+
+variables:
+  IMAGE_NAME: uedwinc/pythonapp #dockerhub username / repository name
+  IMAGE_TAG: appv1.0 #Any suitable tag
+
+stages:
+  - test
+  - build
+  - deploy
+
+run_tests:
+  image: python:3.9-slim-buster #Based on information from programmers and to overwrite the default ruby image
+  stage: test
+  before_script:
+    - apt-get update && apt-get install make -y #apt-get because the image is built on debian. install make inorder to build the makefile the app is built on.
+  script:
+    - make test
+
+build_image:
+  image: docker:24.0.7 #This is the image this process executor will use instead of the default ruby
+  stage: build
+  needs:
+    - run_tests
+  services:
+    - docker:24.0.7-dind #This is a service container where the job will execute (docker in docker)
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs" #This variable connects both containers
+  before_script:
+    - docker login -u $USERNAME -p $PASSWORD #As configured in gitlab variable
+  script:
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+  
+deploy:
+  stage: deploy
+  needs:
+    - build_image
+  before_script:
+    - chmod 400 $SSH_KEY
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@3.141.13.242 " 
+        docker login -u $USERNAME -p $PASSWORD &&
+        docker run -d -p 5000:5000 $IMAGE_NAME:$IMAGE_TAG"
+        #docker ps -aq | xargs docker stop | xargs docker rm #This will delete the deployment if necessary
