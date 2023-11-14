@@ -1,11 +1,11 @@
 # Building Python App on Gitlab CICD
 
-![Gitlab-CICD.png](https://gitlab.com/uedwinc/python-webapp-for-system-monitoring/-/blob/main/GitLab-CICD.png?ref_type=heads)
+![Gitlab-CICD.png](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/GitLab-CICD.png)
 
 This is a simple Python Flask web application. The app provides system information and a realtime monitoring screen with dials showing CPU, memory, IO and process information.
-The python application is written as a [makefile](https://gitlab.com/uedwinc/python-webapp-for-system-monitoring/-/blob/main/makefile?ref_type=heads)
+The python application is written as a [makefile](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/makefile)
 
-The application files for this project is cloned from https://github.com/benc-uk/python-demoapp/
+The application files for this project is cloned from https://github.com/seunayolu/gitlab-project (Original project archived at https://github.com/benc-uk/python-demoapp/)
 
 This project involves:
 
@@ -62,39 +62,44 @@ NB:
     - Give it a name (eg pythonapp)
     - Make it private and create
 
-![pythonapp repo]()
+![pythonapp repo](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/images/pythonapp%20repo.png)
 
 - Confirm on dockerhub if image was successfully pushed after running the pipeline
 
-![pushed]()
+![pushed](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/images/pushed.png)
 
 3. Deploying the image to EC2
 
 - Start up an instance on AWS (ubuntu) and ssh into it
 - Do `apt update`
-- Install docker `apt install docker.io -y`
+- Install docker
+    ```
+    apt install docker.io -y
+    ```
 - Add the 'ubuntu' user to docker group
-    `usermod -aG docker ubuntu`
+    ```
+    usermod -aG docker ubuntu
+    ```
 - Add the instance key pair to the variables on gitlab
     - Under 'Add variable' type, select 'File'
     - No need to check any of the flags
     - key = SSH_KEY
     - value = content of the key pair.pem file
 
-- Confirm deployment
+- Confirm deployment:
 
-    - `docker ps`
+- `docker ps`
 
-![docker ps]()
+![docker ps](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/images/docker%20ps.png)
 
-    - Pipeline success
+- Pipeline success
 
-![passed]()
+![passed](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/images/passed.png)
 
-    - Open port 5000 on the instance security group and open the application in a browser with ip address and port
+- Open port 5000 on the instance security group and open the application in a browser with ip address and port
 
-![pythonapp]()
+![pythonapp](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/images/pythonapp.png)
 
-    - Slack Notification check
+- Slack Notification check
 
-![slack]()
+![slack](https://github.com/uedwinc/Python-App-on-GitLab-CICD/blob/main/images/slack.png)
